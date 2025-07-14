@@ -1,6 +1,6 @@
 import axios from "axios"
 const apiRequest = axios.create({
-    baseURL : "http://localhost:8000/api",
+    baseURL : "https://novaestate-app.onrender.com",
     withCredentials : true
 });
 export default apiRequest;
