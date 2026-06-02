@@ -37,7 +37,7 @@ function Login() {
     navigate("/")
   }catch(err)
   {
-    setError(err.response.data.message);
+    setError(err.response?.data?.message || "Something went wrong. Please try again.");
   } finally{
     setisLoading(false);
   }

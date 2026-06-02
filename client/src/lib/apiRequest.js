@@ -1,8 +1,7 @@
 import axios from "axios"
 
-// For development use localhost, for production use your deployed API
 const apiRequest = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000/api",
+    baseURL: import.meta.env.VITE_API_URL || "https://novaestate-app.onrender.com/api",
     withCredentials: true
 });
 

@@ -60,14 +60,12 @@ export const getPost = async (req , res) =>{
             userId = null;
         }
         else{
-            jwt.verify(token , process.env.JWT_SECRET_KEY , async(err , payload) => {
-                if(err)
-                {
-                    userId = null;
-                }else{
-                    userId = payload.id;
-                }
-            });
+            try {
+                const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+                userId = payload.id;
+            } catch (err) {
+                userId = null;
+            }
         }
 
         const saved = await prisma.savedPost.findUnique({

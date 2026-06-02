@@ -2,7 +2,18 @@ import { Server } from "socket.io";
 
 const io = new Server({
   cors: {
-    origin:[ "http://localhost:5173" ,"https://nova-estate-app.vercel.app" ],
+    origin: function(origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://nova-estate-app.vercel.app"
+      ];
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST"],
     credentials: true
   },
@@ -32,7 +43,9 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", ({ receiverId, data }) => {
     const receiver = getUser(receiverId);
-    io.to(receiver.socketId).emit("getMessage", data);
+    if (receiver) {
+      io.to(receiver.socketId).emit("getMessage", data);
+    }
   });
 
   socket.on("disconnect", () => {

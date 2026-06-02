@@ -46,7 +46,7 @@ const handleSubmit = async (e) =>{
 
     navigate("/login")
   } catch(err) {
-    setError(err.response?.data?.message || "Registration failed");
+    setError(err.response?.data?.message || "Something went wrong. Please try again.");
   } finally {
     setisLoading(false);
   }

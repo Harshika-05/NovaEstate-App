@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -10,14 +12,24 @@ import messageRoute from "./routes/message.route.js";
 
 const app = express();
 
-// CORS configuration - Allow localhost and Vercel
+// CORS configuration - Allow localhost, Vercel production, and all Vercel preview deployments
 app.use(cors({
-    origin: [
-        "https://nova-estate-app.vercel.app", 
-        "http://localhost:5173",
-        "http://localhost:3000"
-    ],
-    credentials: true
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      "https://nova-estate-app.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:3000"
+    ];
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Allow exact matches or any Vercel preview deployments
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    }
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
 }));
 
 app.use(express.json());
