@@ -1,7 +1,7 @@
 import "./singlePage.scss";
 import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
-import { redirect, useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
@@ -13,25 +13,36 @@ function SinglePage() {
   const [saved , setSaved] = useState(post.isSaved);
 
   const {currentUser} = useContext(AuthContext);
-const handleSave = async ()=>{
-  // AFTER REACT 19 UPDATE TO USEOPTIMISTIK HOOK BUT I AM USING REACT 18 RIGHT NOW
+  const navigate = useNavigate();
 
-  setSaved((prev)=> !prev);
-  if(!currentUser)
-  {
-    redirect("/login");
-  }
-  try{
+  const handleSave = async ()=>{
+    // AFTER REACT 19 UPDATE TO USEOPTIMISTIK HOOK BUT I AM USING REACT 18 RIGHT NOW
 
-    await apiRequest.post("/users/save" , {postId : post.id});
-
-  }catch(err)
-  {
-    console.log(err)
     setSaved((prev)=> !prev);
-
+    if(!currentUser) {
+      navigate("/login");
+      return;
+    }
+    try{
+      await apiRequest.post("/users/save" , {postId : post.id});
+    }catch(err){
+      console.log(err)
+      setSaved((prev)=> !prev);
+    }
   }
-}
+
+  const handleSendMessage = async () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+    try {
+      await apiRequest.post("/chats", { receiverId: post.user.id });
+      navigate("/profile");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="singlePage">
@@ -136,7 +147,7 @@ const handleSave = async ()=>{
             <Map items={[post]} />
           </div>
           <div className="buttons">
-            <button>
+            <button onClick={handleSendMessage}>
               <img src="/chat.png" alt="" />
               Send a Message
             </button>
